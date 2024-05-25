@@ -1,10 +1,11 @@
-
 from sqlalchemy import UniqueConstraint
-from .base import Base
 from sqlalchemy.orm import Mapped, mapped_column
 
+from .base import Base
+from .mixins.int_id_pk import IntIdPkMixin
 
-class User(Base):
+
+class User(Base, IntIdPkMixin):
     username: Mapped[str] = mapped_column(unique=True)
 
     foo: Mapped[int]

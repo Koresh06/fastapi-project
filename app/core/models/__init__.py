@@ -5,12 +5,14 @@ __all__ = (
     "Order",
     "Product",
     "OrderItems",
+    "IntIdPkMixin"
 )
 
 
-from .db_helper import db_helper
-from .base import Base
-from .user import User
-from .order import Order
-from .product import Product
-from .order_items import OrderItems
+from core.models.db_helper import db_helper
+from core.models.base import Base
+from core.models.user import User
+from core.models.order import Order
+from core.models.product import Product
+from core.models.order_items import OrderItems
+from core.models.mixins.int_id_pk import IntIdPkMixin

@@ -3,8 +3,8 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey, Float, Integer
 
-from .base import Base
-from .mixins.int_id_pk import IntIdPkMixin
+from core.models.base import Base
+from core.models.mixins.int_id_pk import IntIdPkMixin
 
 if TYPE_CHECKING:
     from models import Product, Order

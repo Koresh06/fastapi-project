@@ -3,7 +3,8 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
-from api.api_v1.user import router as api_router
+from api.api_v1.user.views import router as user_router
+from api.api_v1.auth.views import router as auth_router
 from core.config import settings
 from core.models import db_helper
 from core.models import Base
@@ -26,8 +27,13 @@ main_app = FastAPI(
 )
 
 main_app.include_router(
-    api_router,
-    prefix=settings.api.prefix,
+    user_router,
+    prefix=settings.api.v1.users,
+    )
+
+main_app.include_router(
+    auth_router,
+    prefix=settings.api.v1.auth,
     )
 
 

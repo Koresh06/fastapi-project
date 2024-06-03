@@ -2,14 +2,20 @@ from pydantic import BaseModel, PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+class AuthConfig(BaseModel):
+    secret_key: str
+    algorithm: str
+    access_token_expire_minutes: int = 30
+
+
 class RunConfig(BaseModel):
     host: str = "127.0.0.1"
     port: int = 8080
 
 
 class ApiV1Prefix(BaseModel):
-    prefix: str = "/v1"
     users: str = "/users"
+    auth: str = "/auth"
 
 
 class ApiPrefix(BaseModel):
@@ -43,6 +49,7 @@ class Settings(BaseSettings):
     run: RunConfig = RunConfig()
     api: ApiPrefix = ApiPrefix()
     db: DatabaseConfig
+    auth: AuthConfig
 
 
 settings = Settings()

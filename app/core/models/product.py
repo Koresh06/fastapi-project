@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 
 class Product(Base, IntIdPkMixin):
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.uid"))
     name: Mapped[str] = mapped_column(String(255), unique=True)
     description: Mapped[str] = mapped_column(String)
     price: Mapped[float] = mapped_column(Float)

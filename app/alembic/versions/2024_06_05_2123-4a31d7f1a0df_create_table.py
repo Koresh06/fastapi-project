@@ -1,8 +1,8 @@
 """create table
 
-Revision ID: 5d8de03dc5ce
+Revision ID: 4a31d7f1a0df
 Revises: 
-Create Date: 2024-06-01 22:36:42.819134
+Create Date: 2024-06-05 21:23:55.412945
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '5d8de03dc5ce'
+revision: str = '4a31d7f1a0df'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -23,22 +23,24 @@ def upgrade() -> None:
     op.create_table('user',
     sa.Column('username', sa.String(length=255), nullable=False),
     sa.Column('email', sa.String(length=255), nullable=False),
-    sa.Column('password', sa.String(length=255), nullable=False),
+    sa.Column('hashed_password', sa.String(length=255), nullable=False),
     sa.Column('role', sa.String(length=255), nullable=False),
-    sa.Column('id', sa.UUID(), nullable=False),
-    sa.PrimaryKeyConstraint('id', name=op.f('pk_user')),
+    sa.Column('is_verified', sa.Boolean(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('uid', sa.UUID(), nullable=False),
+    sa.PrimaryKeyConstraint('uid', name=op.f('pk_user')),
     sa.UniqueConstraint('email', name=op.f('uq_user_email')),
-    sa.UniqueConstraint('id', name=op.f('uq_user_id')),
+    sa.UniqueConstraint('uid', name=op.f('uq_user_uid')),
     sa.UniqueConstraint('username', name=op.f('uq_user_username'))
     )
     op.create_table('order',
     sa.Column('user_id', sa.UUID(), nullable=False),
     sa.Column('status', sa.String(length=255), nullable=False),
     sa.Column('total_price', sa.Float(), nullable=False),
-    sa.Column('id', sa.UUID(), nullable=False),
-    sa.ForeignKeyConstraint(['user_id'], ['user.id'], name=op.f('fk_order_user_id_user')),
-    sa.PrimaryKeyConstraint('id', name=op.f('pk_order')),
-    sa.UniqueConstraint('id', name=op.f('uq_order_id'))
+    sa.Column('uid', sa.UUID(), nullable=False),
+    sa.ForeignKeyConstraint(['user_id'], ['user.uid'], name=op.f('fk_order_user_id_user')),
+    sa.PrimaryKeyConstraint('uid', name=op.f('pk_order')),
+    sa.UniqueConstraint('uid', name=op.f('uq_order_uid'))
     )
     op.create_table('product',
     sa.Column('user_id', sa.UUID(), nullable=False),
@@ -46,22 +48,22 @@ def upgrade() -> None:
     sa.Column('description', sa.String(), nullable=False),
     sa.Column('price', sa.Float(), nullable=False),
     sa.Column('image_url', sa.String(), nullable=False),
-    sa.Column('id', sa.UUID(), nullable=False),
-    sa.ForeignKeyConstraint(['user_id'], ['user.id'], name=op.f('fk_product_user_id_user')),
-    sa.PrimaryKeyConstraint('id', name=op.f('pk_product')),
-    sa.UniqueConstraint('id', name=op.f('uq_product_id')),
-    sa.UniqueConstraint('name', name=op.f('uq_product_name'))
+    sa.Column('uid', sa.UUID(), nullable=False),
+    sa.ForeignKeyConstraint(['user_id'], ['user.uid'], name=op.f('fk_product_user_id_user')),
+    sa.PrimaryKeyConstraint('uid', name=op.f('pk_product')),
+    sa.UniqueConstraint('name', name=op.f('uq_product_name')),
+    sa.UniqueConstraint('uid', name=op.f('uq_product_uid'))
     )
     op.create_table('order_items',
     sa.Column('order_id', sa.UUID(), nullable=False),
     sa.Column('product_id', sa.UUID(), nullable=False),
     sa.Column('quantity', sa.Integer(), nullable=False),
     sa.Column('price', sa.Float(), nullable=False),
-    sa.Column('id', sa.UUID(), nullable=False),
-    sa.ForeignKeyConstraint(['order_id'], ['order.id'], name=op.f('fk_order_items_order_id_order')),
-    sa.ForeignKeyConstraint(['product_id'], ['product.id'], name=op.f('fk_order_items_product_id_product')),
-    sa.PrimaryKeyConstraint('id', name=op.f('pk_order_items')),
-    sa.UniqueConstraint('id', name=op.f('uq_order_items_id'))
+    sa.Column('uid', sa.UUID(), nullable=False),
+    sa.ForeignKeyConstraint(['order_id'], ['order.uid'], name=op.f('fk_order_items_order_id_order')),
+    sa.ForeignKeyConstraint(['product_id'], ['product.uid'], name=op.f('fk_order_items_product_id_product')),
+    sa.PrimaryKeyConstraint('uid', name=op.f('pk_order_items')),
+    sa.UniqueConstraint('uid', name=op.f('uq_order_items_uid'))
     )
     # ### end Alembic commands ###
 

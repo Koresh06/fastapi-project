@@ -1,52 +1,74 @@
 from datetime import datetime, timedelta
-from typing import Annotated
-from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
-from jose import jwt, JWTError
-from core.models import db_helper
+from fastapi import HTTPException
+
+import jwt
+from passlib.context import CryptContext
 
 from core.config import settings
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
+PASSWORD_CONTEXT = CryptContext(schemes=["bcrypt"], deprecated="auto")
+SECRET_KEY = settings.auth.secret_key
+ALGORITHM = settings.auth.algorithm
 
 
 
-async def create_access_token(
-    username: str,
-    user_id: str,
-    role: str,
-    expires_delta: timedelta,
-):
-    encode = {"sub": username, "id": user_id, "role": role}
-    expires = datetime.utcnow() + expires_delta
-    encode.update({"exp": expires})
-    return jwt.encode(encode, settings.auth.secret_key, algorithm=settings.auth.algorithm)
-    
+def check_password(plain_password: str, hashed_password: str) -> bool:
+    """Check and verify your password against a hash"""
+    return PASSWORD_CONTEXT.verify(plain_password, hashed_password)
 
-async def get_current_user(
-    token: Annotated[
-        str, 
-        Depends(oauth2_scheme)
-    ],
-    session: Annotated[
-        AsyncSession, 
-        Depends(db_helper.session_getter),
-    ],
-):
+
+def create_password_hash(plain_password: str) -> str:
+    """Hash a password to be stored in the database"""
+    return PASSWORD_CONTEXT.hash(plain_password)
+
+
+def create_access_token(data: dict, expires_delta: timedelta | None = None):
+    """Create new access token for authorization"""
+    data = data.copy()
+
+    now = datetime.now()
+
+    if not expires_delta:
+        expires_delta = timedelta(minutes=30)
+
+    data.update({"exp": now + expires_delta})
+
+    token = jwt.encode(data, SECRET_KEY, ALGORITHM)
+
+    return token
+
+
+def create_refresh_token(data: dict, expires_delta: timedelta | None = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(days=7)  # Рефреш-токен действует 7 дней
+    to_encode.update({"exp": expire})
+    token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return token
+
+
+def decode_token(token: str):
     try:
-        payload = jwt.decode(token, settings.auth.secret_key, algorithms=[settings.auth.algorithm])
-        username: str = payload.get("sub")
-        user_id: str = str(payload.get("id"))
-        role: str = payload.get("role")
-        if username is None or user_id is None or role is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Could not validate credentials",
-            )
-        return {"username": username, "id": user_id, "role": role}
-    except JWTError as e:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-        )
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+
+def get_user_from_jwt(token: str) -> str | None:
+    """Get user from  a given JWT"""
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+
+        if not (username := payload.get("sub")):
+            return None
+
+    except jwt.PyJWTError:
+        return None
+
+    return username
+

@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 class Order(Base, IntIdPkMixin):
-    user_id: Mapped[int] = mapped_column(UUID(as_uuid=True), ForeignKey("user.id"))
+    user_id: Mapped[int] = mapped_column(UUID(as_uuid=True), ForeignKey("user.uid"))
     status: Mapped[str] = mapped_column(String(255), default="pending")# statuses: pending, completed, canceled
     total_price: Mapped[float] = mapped_column(Float)
     

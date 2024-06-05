@@ -11,8 +11,8 @@ if TYPE_CHECKING:
 
 
 class OrderItems(Base, IntIdPkMixin):
-    order_id: Mapped[int] = mapped_column(UUID(as_uuid=True), ForeignKey("order.id"))
-    product_id: Mapped[int] = mapped_column(UUID(as_uuid=True), ForeignKey("product.id"))
+    order_id: Mapped[int] = mapped_column(UUID(as_uuid=True), ForeignKey("order.uid"))
+    product_id: Mapped[int] = mapped_column(UUID(as_uuid=True), ForeignKey("product.uid"))
     quantity: Mapped[int] = mapped_column(Integer)
     price: Mapped[float] = mapped_column(Float)
     

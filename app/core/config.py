@@ -6,6 +6,7 @@ class AuthConfig(BaseModel):
     secret_key: str
     algorithm: str
     access_token_expire_minutes: int = 30
+    refresh_token_expire_days: int = 7
 
 
 class RunConfig(BaseModel):
@@ -16,6 +17,7 @@ class RunConfig(BaseModel):
 class ApiV1Prefix(BaseModel):
     users: str = "/users"
     auth: str = "/auth"
+    roles: str = "/roles"
 
 
 class ApiPrefix(BaseModel):

@@ -1,6 +1,7 @@
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi import Request, HTTPException
-from .utils import decode_token
+
+from .utils import decode_jwt
 
 
 class JWTBearer(HTTPBearer):
@@ -31,7 +32,7 @@ class JWTBearer(HTTPBearer):
             bool: True if the token is valid, False otherwise.
         """
         try:
-            data = decode_token(token)
+            data = decode_jwt(token)
             return data is not None
         except Exception:
             return False

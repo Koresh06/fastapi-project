@@ -1,14 +1,10 @@
-from passlib.context import CryptContext
 from sqlalchemy import desc, select, Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models.user import User
 from core.models.blacklisted_tokens import BlacklistedToken
-from .schemas import UserCreationModel
+from api.api_v1.auth.schemas import UserCreationModel
 from api.api_v1.auth.password_utils import create_password_hash
-
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class UserService:
@@ -21,8 +17,8 @@ class UserService:
         return stmt if stmt else None
 
 
-    async def get_all_users(self) -> list[User] | None:
-        statement = select(User).order_by(desc(User.created_at))
+    async def get_all_users(self, limit: int, offset: int) -> list[User] | None:
+        statement = select(User).order_by(desc(User.created_at)).limit(limit).offset(offset)
         stmt: Result = await self.session.scalars(statement)
         return stmt
 

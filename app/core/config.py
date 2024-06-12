@@ -17,7 +17,7 @@ class RunConfig(BaseModel):
 class ApiV1Prefix(BaseModel):
     users: str = "/users"
     auth: str = "/auth"
-    roles: str = "/roles"
+    products: str = "/products"
 
 
 class ApiPrefix(BaseModel):

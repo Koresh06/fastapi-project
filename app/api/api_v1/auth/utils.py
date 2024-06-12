@@ -6,7 +6,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.api_v1.auth.service import UserService
+from api.api_v1.user.service import UserService
 from api.api_v1.auth.password_utils import check_password
 from core.models import db_helper
 from core.config import settings

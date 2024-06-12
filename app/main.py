@@ -4,8 +4,8 @@ from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
 from api.api_v1.user.views import router as user_router
-# from api.api_v1.auth.views import router as auth_router
 from api.api_v1.auth.view import router as auth_router
+from api.api_v1.product.views import router as product_router
 from core.config import settings
 from core.models import db_helper
 from core.models import Base
@@ -35,6 +35,11 @@ main_app.include_router(
 main_app.include_router(
     auth_router,
     prefix=settings.api.v1.auth,
+    )
+
+main_app.include_router(
+    product_router,
+    prefix=settings.api.v1.products,
     )
 
 

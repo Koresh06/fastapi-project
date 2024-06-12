@@ -11,7 +11,7 @@ from api.api_v1.user.schemas import UserSchema
 from .utils import decode_jwt, validate_auth_user
 from .halper import create_access_token, create_refresh_token
 from .validator import oauth2_scheme
-from .service import UserService
+from ..user.service import UserService
 from .auth_handler import security
 
 

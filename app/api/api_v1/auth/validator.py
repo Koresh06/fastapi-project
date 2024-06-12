@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.api_v1.auth import utils
 from api.api_v1.user.schemas import UserSchema
 from api.api_v1.auth.halper import TOKEN_TYPE_FIELD, ACCESS_TOKEN_TYPE
-from api.api_v1.auth.service import UserService
+from api.api_v1.user.service import UserService
 from core.models import db_helper
 
 

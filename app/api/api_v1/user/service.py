@@ -1,10 +1,12 @@
+import uuid
 from sqlalchemy import desc, select, Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models.user import User
 from core.models.blacklisted_tokens import BlacklistedToken
-from api.api_v1.auth.schemas import UserCreationModel
-from api.api_v1.auth.password_utils import create_password_hash
+from api.api_v1.auth.schemas import UserCreateModel
+from api.api_v1.user.schemas import UserUpdateModel
+from api.api_v1.auth.utils import generate_passwd_hash
 
 
 class UserService:
@@ -12,7 +14,28 @@ class UserService:
         self.session = session
 
 
-    async def get_user(self, username: str) -> User | None:
+    async def delete_user(self, user: User):
+        await self.session.delete(user)
+        await self.session.commit()
+
+
+    async def update_user(
+            self, 
+            user: User,
+            user_update: UserUpdateModel,
+            partil: bool = False
+            ) -> User:
+        for field, value in user_update.model_dump(exclude_unset=partil).items():
+            setattr(user, field, value)
+        await self.session.commit()
+        return user
+
+
+    async def get_user_uid(self, uid: uuid.UUID) -> User | None:
+        stmt: Result = await self.session.scalar(select(User).where(User.uid == uid))
+        return stmt
+
+    async def get_user_username(self, username: str) -> User | None:
         stmt: Result = await self.session.scalar(select(User).where(User.username == username))
         return stmt if stmt else None
 
@@ -23,9 +46,9 @@ class UserService:
         return stmt
 
 
-    async def create_user(self, user_details: UserCreationModel):
+    async def create_user(self, user_details: UserCreateModel):
         user_dict = user_details.model_dump()
-        hashed_password = create_password_hash(user_dict["hashed_password"])
+        hashed_password = generate_passwd_hash(user_dict["hashed_password"])
         user_dict["hashed_password"] = hashed_password
         new_user = User(**user_dict)
         self.session.add(new_user)

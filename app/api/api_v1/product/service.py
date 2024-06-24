@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.api_v1.user.schemas import UserSchema
 
 from core.models.product import Product
-from api.api_v1.product.schemas import ProductCreationModel
+from api.api_v1.product.schemas import ProductCreationModel, ProductUpdateModel
 
 
 class ProductService:
@@ -13,8 +13,26 @@ class ProductService:
         self.session = session
 
 
-    async def get_product(self, id: int) -> Product | None:
-        pass
+    async def delete_product(self, product: Product):
+        await self.session.delete(product)
+        await self.session.commit()
+
+
+    async def update_product(
+            self, 
+            product: Product,
+            product_update: ProductUpdateModel,
+            partil: bool = False
+            ) -> Product:
+        for field, value in product_update.model_dump(exclude_unset=partil).items():
+            setattr(product, field, value)
+        await self.session.commit()
+        return product
+
+
+    async def get_product(self, uid: str) -> Product | None:
+        stmt: Result = await self.session.scalar(select(Product).where(Product.uid == uid))
+        return stmt
 
 
     async def get_all_products(self, limit: int, offset: int) -> list[Product] | None:

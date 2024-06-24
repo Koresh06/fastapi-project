@@ -2,6 +2,11 @@ from pydantic import BaseModel, PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+class SettingsRedis(BaseModel):
+    host: str = "localhost"
+    port: int = 6379
+
+
 class AuthConfig(BaseModel):
     secret_key: str
     algorithm: str
@@ -52,6 +57,7 @@ class Settings(BaseSettings):
     api: ApiPrefix = ApiPrefix()
     db: DatabaseConfig
     auth: AuthConfig
+    redis: SettingsRedis
 
 
 settings = Settings()

@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine, async_sessi
 from core.config import settings
 
 class DatabaseHelper:
+    
     def __init__(
         self,
         url: str,

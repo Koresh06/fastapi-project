@@ -1,16 +1,26 @@
+import uuid
+from datetime import datetime
+
 from pydantic import BaseModel, EmailStr
 
 
-class TokenInfo(BaseModel):
+class UserCreateModel(BaseModel):
     
-    access_token: str
-    refresh_token: str | None = None
-    token_type: str = "Bearer"
-
-
-class UserCreationModel(BaseModel):
-
     username: str
     email: EmailStr
     hashed_password: str
-    role: str
+
+
+class UserModel(BaseModel):
+
+    uid: uuid.UUID
+    username: str
+    email: EmailStr
+    created_at: datetime
+
+
+
+class UserLoginModel(BaseModel):
+
+    email: EmailStr
+    password: str

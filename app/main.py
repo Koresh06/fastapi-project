@@ -1,15 +1,18 @@
 from contextlib import asynccontextmanager
+from fastapi.templating import Jinja2Templates
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
 from api.api_v1.user.views import router as user_router
-from api.api_v1.auth.view import router as auth_router
+# from api.api_v1.auth.views import router as auth_router
+from api.api_v1.auth.views import auth_router
 from api.api_v1.product.views import router as product_router
 from core.config import settings
 from core.models import db_helper
 from core.models import Base
 
+ 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
